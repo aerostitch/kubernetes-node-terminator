@@ -22,6 +22,7 @@ type AWSEc2Client struct {
 }
 
 type AWSEc2Controller struct {
+	Provider
 	client  AWSEc2
 	filters []*ec2.Filter
 	dryRun  bool
