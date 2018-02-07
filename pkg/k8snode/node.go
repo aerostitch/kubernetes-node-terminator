@@ -1,6 +1,7 @@
 package k8snode
 
 import (
+	"github.com/golang/glog"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
@@ -12,8 +13,14 @@ type Config struct {
 	node    *Node
 }
 
-func newConfig(kclient *kubernetes.Clientset) Config {
-	return &Config{kclient: kclient}
+func newConfig(kclient *kubernetes.Clientset, cloudType string, dryRun bool) Config {
+	cfg := &Config{kclient: kclient}
+	switch cloudType {
+	case "aws":
+		cfg.node = &newAWSClient(dryRun)
+	default:
+		glog.Fatalf("Cloud provider %s not supported\n", cloudType)
+	}
 }
 
 func (c Config) Status(listOptions metav1.ListOptions) (*v1.NodeList, error) {
@@ -22,13 +29,9 @@ func (c Config) Status(listOptions metav1.ListOptions) (*v1.NodeList, error) {
 }
 
 func (c Config) Terminate(node v1.Node) error {
-	/*  I wasn't sure the best place to put the ec2 code.   Should I create a seperate package for the ec2 code and then when ppl call the newConfig function they need to pass in the awsclient object as well?   So then the Config struct would look like this isntead
-
-	type Config struct {
-		kclient *kubernetes.Clientset
-		awsclient *awsEc2Controller
+	i := node.Labels["instance-id"]
+	o, err := 
 	}
-	*/
 }
 
 func (c Config) Event(node v1.node) error {
