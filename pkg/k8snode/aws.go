@@ -10,7 +10,7 @@ type AWSClient struct {
 	ec2 *AWSEc2Controller
 }
 
-func newAWSClient(dryRun bool) *AWSClient {
+func NewAWSClient(dryRun bool) *AWSClient {
 	AWSClient := &AWSClient{
 		ec2: newAWSEc2Controller(newAWSEc2Client(), dryRun),
 	}
@@ -27,20 +27,20 @@ type AWSEc2Controller struct {
 	dryRun  bool
 }
 
-func newAWSEc2Client() AWSEc2 {
+func NewAWSEc2Client() AWSEc2 {
 	return &AWSEc2Client{
 		session: ec2.New(session.New()),
 	}
 }
 
-func newAWSEc2Controller(AWSEc2Client AWSEc2, dryRyn bool) *AWSEc2Controller {
+func NewAWSEc2Controller(AWSEc2Client AWSEc2, dryRyn bool) *AWSEc2Controller {
 	return &AWSEc2Controller{
 		client: AWSEc2Client,
 		dryRun: dryRun,
 	}
 }
 
-func (e AWSEc2Client) terminateInstances(input *ec2.TerminateInstancesInput) (*ec2.TerminateInstancesOutput, error) {
+func (e AWSEc2Client) TerminateInstances(input *ec2.TerminateInstancesInput) (*ec2.TerminateInstancesOutput, error) {
 	return e.session.TerminateInstances(input)
 }
 

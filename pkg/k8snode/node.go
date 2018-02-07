@@ -9,16 +9,16 @@ import (
 )
 
 type Config struct {
+	Node
 	kclient  *kubernetes.Clientset
-	node     *Node
 	provider *Provider
 }
 
-func newConfig(kclient *kubernetes.Clientset, cloudType string, dryRun bool) Config {
+func NewConfig(kclient *kubernetes.Clientset, cloudType string, dryRun bool) Config {
 	cfg := &Config{kclient: kclient}
 	switch cloudType {
 	case "aws":
-		cfg.provider = &newAWSClient(dryRun)
+		cfg.provider = &NewAWSClient(dryRun)
 	default:
 		glog.Fatalf("Cloud provider %s not supported\n", cloudType)
 	}
