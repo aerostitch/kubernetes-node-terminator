@@ -44,8 +44,7 @@ func (e AWSEc2Client) terminateInstances(input *ec2.TerminateInstancesInput) (*e
 	return e.session.TerminateInstances(input)
 }
 
-func (c *AWSEc2Controller) terminateInstance(instance string) (*ec2.TerminateInstancesOutput, error) {
-	var resp *ec2.TerminateInstancesOutput
+func (c *AWSEc2Controller) terminateInstance(instance string) error {
 	var err error
 
 	glog.V(4).Infof("Terminating instance %s\n", instance)
@@ -56,6 +55,6 @@ func (c *AWSEc2Controller) terminateInstance(instance string) (*ec2.TerminateIns
 		},
 		DryRun: AWS.Bool(c.dryRun),
 	}
-	resp, err = c.client.terminateInstances(params)
-	return resp, err
+	_, err = c.client.terminateInstances(params)
+	return err
 }
