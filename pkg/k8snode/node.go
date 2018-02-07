@@ -9,15 +9,16 @@ import (
 )
 
 type Config struct {
-	kclient *kubernetes.Clientset
-	node    *Node
+	kclient  *kubernetes.Clientset
+	node     *Node
+	provider *Provider
 }
 
 func newConfig(kclient *kubernetes.Clientset, cloudType string, dryRun bool) Config {
 	cfg := &Config{kclient: kclient}
 	switch cloudType {
 	case "aws":
-		cfg.node = &newAWSClient(dryRun)
+		cfg.provider = &newAWSClient(dryRun)
 	default:
 		glog.Fatalf("Cloud provider %s not supported\n", cloudType)
 	}
@@ -30,8 +31,7 @@ func (c Config) Status(listOptions metav1.ListOptions) (*v1.NodeList, error) {
 
 func (c Config) Terminate(node v1.Node) error {
 	i := node.Labels["instance-id"]
-	o, err := 
-	}
+	o, err := c.provider.terminateInstance(i)
 }
 
 func (c Config) Event(node v1.node) error {
