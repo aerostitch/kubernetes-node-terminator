@@ -44,7 +44,7 @@ func (e AWSEc2Client) TerminateInstances(input *ec2.TerminateInstancesInput) (*e
 	return e.session.TerminateInstances(input)
 }
 
-func (c *AWSEc2Controller) terminateInstance(instance string) error {
+func (c *AWSEc2Controller) TerminateInstance(instance string) error {
 	var err error
 
 	glog.V(4).Infof("Terminating instance %s\n", instance)

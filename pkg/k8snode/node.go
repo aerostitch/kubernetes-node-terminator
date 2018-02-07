@@ -31,7 +31,7 @@ func (c Config) Status(listOptions metav1.ListOptions) (*v1.NodeList, error) {
 
 func (c Config) Terminate(node v1.Node) error {
 	i := node.Labels["instance-id"]
-	o, err := c.provider.terminateInstance(i)
+	o, err := c.provider.TerminateInstance(i)
 }
 
 func (c Config) Event(node v1.node) error {
