@@ -168,7 +168,7 @@ func main() {
 				instanceID = i.Labels["instance-id"]
 
 				if state.okToTerminate(instanceID) {
-					err := config.Terminate(instanceID)
+					err := config.Terminate(i)
 					if err != nil {
 						glog.Errorf("An error occurred terminating instance %s\n. Error: %s", instanceID, err)
 					}
@@ -190,5 +190,4 @@ func main() {
 		state.heartBeat = time.Now()
 		time.Sleep(time.Second * interval)
 	}
-
 }

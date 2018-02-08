@@ -1,8 +1,8 @@
 hash: 475b1245e8b3b6a3c6781a7dcfeef2e4aba83595150bfffe5bc939851a06c5db
-updated: 2018-02-07T15:34:48.994676675-08:00
+updated: 2018-02-08T14:41:43.8499586-08:00
 imports:
 - name: github.com/aws/aws-sdk-go
-  version: 04519f0a17774a66d752df001193954784d6e7dc
+  version: 9d2e2c90e5b140adba893bf0ffaaef7c3c891207
   subpackages:
   - AWS/session
   - aws
@@ -58,6 +58,10 @@ imports:
   - sortkeys
 - name: github.com/golang/glog
   version: 23def4e6c14b4da8ac2ed8007337bc5eb5007998
+- name: github.com/golang/groupcache
+  version: 02826c3e79038b59d737d3b1c0a1d937f71a4433
+  subpackages:
+  - lru
 - name: github.com/golang/protobuf
   version: 4bd1920723d7b7c925de087aa32e2187708897f7
   subpackages:
@@ -242,6 +246,7 @@ imports:
   - rest/watch
   - tools/clientcmd/api
   - tools/metrics
+  - tools/record
   - tools/reference
   - transport
   - util/cert
