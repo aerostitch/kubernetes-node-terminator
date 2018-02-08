@@ -1,14 +1,13 @@
 package k8snode
 
 import (
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/client-go/pkg/api/v1"
+	corev1 "k8s.io/api/core/v1"
 )
 
 type Node interface {
-	Status(metav1.ListOptions) (*v1.NodeList, error)
-	Terminate(v1.Node) error
-	Event(v1.Node) error
+	Status(labels map[string]string) (*corev1.NodeList, error)
+	Terminate(corev1.Node) error
+	Event(corev1.Node) error
 }
 
 type Provider interface {

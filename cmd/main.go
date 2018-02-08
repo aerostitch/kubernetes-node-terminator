@@ -5,6 +5,7 @@ import (
 	"os"
 	"strconv"
 
+	"github.com/VEVO/kubernetes-node-terminator/pkg/k8snode"
 	"github.com/golang/glog"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
@@ -33,13 +34,14 @@ func newClient() (*kubernetes.Clientset, error) {
 }
 
 func main() {
+	var err error
 	flag.Parse()
 
 	flag.Lookup("logtostderr").Value.Set("true")
 
 	switch {
 	case dryRunStr != "":
-		dryRun, err := strconv.ParseBool(dryRunStr)
+		dryRun, err = strconv.ParseBool(dryRunStr)
 		if err != nil {
 			glog.Fatalf("Error parsing DRY_RUN value: %s", err)
 		}
@@ -53,7 +55,7 @@ func main() {
 		glog.Fatal(err.Error())
 	}
 
-	config := newConfig(client, cloudProvider)
+	config := k8snode.NewConfig(client, cloudProvider, dryRun)
 
 	labels := make(map[string]string)
 	labels["status"] = "unhealthy"
@@ -61,11 +63,14 @@ func main() {
 	for {
 		glog.Info("Checking for unhealthy instances")
 
-		nodeList, err := config.status(labels)
+		nodeList, err := config.Status(labels)
 		if err != nil {
 			glog.Fatalf("failed to populate node by label: %s", err)
 		}
 
-		// iterate over nodeList and call config.status(<node>) if needed
+		for _, i := range nodeList.Items {
+			instanceID := i.Labels["instance-id"]
+			glog.Infof("InstanceID is %s\n", instanceID)
+		}
 	}
 }
