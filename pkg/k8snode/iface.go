@@ -5,8 +5,8 @@ import (
 )
 
 type Node interface {
-	Status(labels map[string]string) (*corev1.NodeList, error)
-	Terminate(corev1.Node) error
+	Status(map[string]string) (*corev1.NodeList, error)
+	Terminate(string) error
 	Event(corev1.Node) error
 }
 

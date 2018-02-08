@@ -15,6 +15,7 @@ import (
 
 var (
 	cloudProvider       = os.Getenv("CLOUD_PROVIDER")
+	cloudRegion         = os.Getenv("CLOUD_REGION")
 	dryRun              = false
 	dryRunStr           = os.Getenv("DRY_RUN")
 	terminationDelayStr = os.Getenv("DELAY_BETWEEN_TERMINATIONS")
@@ -122,6 +123,8 @@ func main() {
 		}
 	case cloudProvider == "":
 		glog.Fatal("Set the CLOUD_PROVIDER variable")
+	case cloudRegion == "":
+		glog.Fatal("Set the CLOUD_REGION variable")
 	case intervalStr != "":
 		t, _ := strconv.Atoi(intervalStr)
 		interval = time.Duration(t)
@@ -143,7 +146,7 @@ func main() {
 
 	state.healthServer("8080", interval)
 
-	config := k8snode.NewConfig(client, cloudProvider, dryRun)
+	config := k8snode.NewConfig(client, cloudProvider, cloudRegion, dryRun)
 
 	labels := make(map[string]string)
 	labels["status"] = "unhealthy"
@@ -157,10 +160,32 @@ func main() {
 			glog.Fatalf("failed to populate node by label: %s", err)
 		}
 
-		for _, i := range nodeList.Items {
-			instanceID = i.Labels["instance-id"]
-			glog.Infof("InstanceID is %s\n", instanceID)
+		if len(nodeList.Items) == 0 {
+			glog.Infof("No unhealthy nodes")
+
+		} else if len(nodeList.Items) <= maxUnhealthy {
+			for _, i := range nodeList.Items {
+				instanceID = i.Labels["instance-id"]
+
+				if state.okToTerminate(instanceID) {
+					err := config.Terminate(instanceID)
+					if err != nil {
+						glog.Errorf("An error occurred terminating instance %s\n. Error: %s", instanceID, err)
+					}
+					i := &instance{
+						instanceID:   instanceID,
+						terminatedAt: time.Now()}
+
+					state.terminated = append(state.terminated, i)
+					state.heartBeat = time.Now()
+					time.Sleep(time.Second * terminationDelay)
+				}
+			}
+
+		} else {
+			glog.Infof("No action will be taken while the unhealthy node count (%d) is greater than MAX_UNHEALTHY (%d).", len(nodeList.Items), maxUnhealthy)
 		}
+
 		state.expireTerminatedInstances()
 		state.heartBeat = time.Now()
 		time.Sleep(time.Second * interval)

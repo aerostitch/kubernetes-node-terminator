@@ -13,16 +13,16 @@ type AWSEc2Controller struct {
 	dryRun  bool
 }
 
-func NewAWSEc2Controller(dryRun bool) Provider {
+func NewAWSEc2Controller(dryRun bool, region string) Provider {
 
 	return &AWSEc2Controller{
-		client: ec2.New(session.New()),
+		client: ec2.New(session.New(&aws.Config{Region: aws.String(region)})),
 		dryRun: dryRun,
 	}
 }
 
 func (c *AWSEc2Controller) TerminateInstance(instance string) error {
-	glog.V(4).Infof("Terminating instance %s\n", instance)
+	glog.Infof("Terminating instance %s\n", instance)
 
 	params := &ec2.TerminateInstancesInput{
 		InstanceIds: []*string{

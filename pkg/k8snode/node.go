@@ -15,11 +15,11 @@ type Config struct {
 	provider Provider
 }
 
-func NewConfig(kclient *kubernetes.Clientset, cloudType string, dryRun bool) Node {
+func NewConfig(kclient *kubernetes.Clientset, cloudType string, cloudRegion string, dryRun bool) Node {
 	cfg := &Config{kclient: kclient}
 	switch cloudType {
 	case "aws":
-		cfg.provider = NewAWSEc2Controller(dryRun)
+		cfg.provider = NewAWSEc2Controller(dryRun, cloudRegion)
 	default:
 		glog.Fatalf("Cloud provider %s not supported\n", cloudType)
 	}
@@ -31,9 +31,8 @@ func (c Config) Status(labels map[string]string) (*corev1.NodeList, error) {
 	return nodeList, err
 }
 
-func (c Config) Terminate(node corev1.Node) error {
-	i := node.Labels["instance-id"]
-	err := c.provider.TerminateInstance(i)
+func (c Config) Terminate(instanceID string) error {
+	err := c.provider.TerminateInstance(instanceID)
 	return err
 }
 
