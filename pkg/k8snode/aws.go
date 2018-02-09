@@ -1,8 +1,8 @@
 package k8snode
 
 import (
-	"github.com/aws/aws-sdk-go/AWS/session"
 	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ec2"
 	"github.com/golang/glog"
 )
