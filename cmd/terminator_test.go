@@ -25,6 +25,16 @@ func newFakeState() *terminatorState {
 	return t
 }
 
+func TestNodeTerminator_ExpireTerminatedInstances(t *testing.T) {
+	state := newFakeState()
+
+	state.expireTerminatedInstances()
+
+	if len(state.terminated) != 1 {
+		t.Errorf("failed to expired already terminated instance")
+	}
+}
+
 func TestNodeTerminator_OkToTerminate(t *testing.T) {
 	state := newFakeState()
 
